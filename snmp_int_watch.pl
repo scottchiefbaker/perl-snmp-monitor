@@ -155,17 +155,18 @@ sub get_interface_names {
 	my $response = $session->get_table($oid);
 	my $err      = $session->error;
 
-	if ($debug) {
-		my $total = sprintf("%0.2f",time() - $start);
-		print "Fetch interface names took $total seconds\n";
-	}
-
 	# We're maping the IDs to the name of the interface
 	foreach my $key(keys(%$response)) {
 		my $value   = $response->{$key};
 		my $int_num = int_num($key);
 
 		$ret->{$int_num} = $value;
+	}
+
+	if ($debug) {
+		my $total = sprintf("%0.2f",time() - $start);
+		my $count = scalar(keys(%$ret));
+		print "Fetch interface names took $total seconds ($count found)\n";
 	}
 
 	return $ret;
