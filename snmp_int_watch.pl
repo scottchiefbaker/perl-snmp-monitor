@@ -309,7 +309,15 @@ sub mysql_date {
 }
 
 sub usage {
-	return "Usage: $0 community\@hostname [filter]\n";
+	my $ret  = "Usage: $0 community\@hostname [filter]\n";
+	$ret    .= "\n";
+	$ret    .= "    --invert          Invert your filter\n";
+	$ret    .= "    --bytes           Output bandwidth per secondin bytes\n";
+	$ret    .= "    --delay           Delay between updates (in seconds)\n";
+	$ret    .= "    --int_num 1,5,9   Only show specific SNMP interfaces\n";
+	$ret    .= "    --debug           Enable debug mode\n";
+
+	return $ret;
 }
 
 # String format: '115', '165bold', '10_on_140', 'reset', 'on_173'
