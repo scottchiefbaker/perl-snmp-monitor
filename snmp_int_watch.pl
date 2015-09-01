@@ -6,20 +6,28 @@ use Time::HiRes qw(time sleep);
 use Net::SNMP;
 use Data::Dump::Color;
 
-my $debug = 0;
-my $delay = 3; # Default delay is 3 seconds
-my $bits  = 0;
-my $bytes = 0;
+my $debug   = 0;
+my $delay   = 3; # Default delay is 3 seconds
+my $bits    = 0;
+my $bytes   = 0;
+my $if_str = "";
+
+my @ifs;
 
 my $ok = GetOptions(
-	'debug'   => \$debug,
-	'bits'    => \$bits,
-	'bytes'   => \$bytes,
-	'delay=i' => \$delay,
+	'debug'     => \$debug,
+	'bytes'     => \$bytes,
+	'bits'      => \$bits,
+	'delay=i'   => \$delay,
+	'int_num=s' => \$if_str,
 );
 
 if (!$bits && !$bytes) {
 	$bits = 1;
+}
+
+if ($if_str) {
+	@ifs = split(/,/,$if_str);
 }
 
 # In case they try and set both bits and bytes
@@ -96,18 +104,29 @@ sub get_interface_bandwidth {
 
 	# If the device supports 64 bit values, get those instead because they're more accurate
 	if ($sixtyfour) {
-		$in_oid  = "1.3.6.1.2.1.31.1.1.1.6";
-		$out_oid = "1.3.6.1.2.1.31.1.1.1.10";
+		$in_oid  = ".1.3.6.1.2.1.31.1.1.1.6";
+		$out_oid = ".1.3.6.1.2.1.31.1.1.1.10";
 	}
 
 	# Get the output bytes
-	my $ret  = {};
-	my $resp = $session->get_table($out_oid);
-	my $err  = $session->error;
+	my ($response,$err,$ret) = {},{},{};
+	if (@ifs) {
+		foreach my $num (@ifs) {
+			my $int_oid = $out_oid . ".$num";
+
+			my $rsp = $session->get_request($int_oid);
+			my $err = $session->error;
+
+			%$response = (%$response,%$rsp);
+		}
+	} else {
+		$response = $session->get_table($out_oid);
+		$err      = $session->error;
+	}
 
 	# Store each interface in a hash by name
-	foreach my $key(keys(%$resp)) {
-		my $bw       = $resp->{$key};
+	foreach my $key(keys(%$response)) {
+		my $bw       = $response->{$key};
 		my $int_num  = int_num($key);
 		my $int_name = $ints->{$int_num};
 
@@ -123,13 +142,26 @@ sub get_interface_bandwidth {
 
 	$start = time();
 
+	$response = {};
+
 	# Get the input bytes
-	my $resp = $session->get_table($in_oid);
-	my $err  = $session->error;
+	if (@ifs) {
+		foreach my $num (@ifs) {
+			my $int_oid = $in_oid . ".$num";
+
+			my $rsp = $session->get_request($int_oid);
+			my $err = $session->error;
+
+			%$response = (%$response,%$rsp);
+		}
+	} else {
+		$response = $session->get_table($in_oid);
+		$err      = $session->error;
+	}
 
 	# Store each interface in a hash by name
-	foreach my $key(keys(%$resp)) {
-		my $bw = $resp->{$key};
+	foreach my $key(keys(%$response)) {
+		my $bw = $response->{$key};
 		my $int_num = int_num($key);
 		my $int_name = $ints->{$int_num};
 
@@ -148,12 +180,24 @@ sub get_interface_names {
 	my $session = shift();
 
 	my $ret = {};
-	my $oid = "1.3.6.1.2.1.2.2.1.2";
+	my $oid = ".1.3.6.1.2.1.2.2.1.2";
 
 	my $start = time();
 
-	my $response = $session->get_table($oid);
-	my $err      = $session->error;
+	my ($response,$err) = {},{};
+	if (@ifs) {
+		foreach my $num (@ifs) {
+			my $int_oid = $oid . ".$num";
+
+			my $rsp = $session->get_request($int_oid);
+			my $err = $session->error;
+
+			%$response = (%$response,%$rsp);
+		}
+	} else {
+		$response = $session->get_table($oid);
+		$err      = $session->error;
+	}
 
 	# We're maping the IDs to the name of the interface
 	foreach my $key(keys(%$response)) {
