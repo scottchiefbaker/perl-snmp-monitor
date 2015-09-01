@@ -6,20 +6,22 @@ use Time::HiRes qw(time sleep);
 use Net::SNMP;
 use Data::Dump::Color;
 
-my $debug   = 0;
-my $delay   = 3; # Default delay is 3 seconds
-my $bits    = 0;
-my $bytes   = 0;
+my $debug  = 0;
+my $delay  = 3; # Default delay is 3 seconds
+my $bits   = 0;
+my $bytes  = 0;
+my $invert = 0;
 my $if_str = "";
 
 my @ifs;
 
 my $ok = GetOptions(
-	'debug'     => \$debug,
-	'bytes'     => \$bytes,
-	'bits'      => \$bits,
-	'delay=i'   => \$delay,
-	'int_num=s' => \$if_str,
+	'debug'       => \$debug,
+	'bytes|b'     => \$bytes,
+	'bits'        => \$bits,
+	'delay|d=i'   => \$delay,
+	'int_num|i=s' => \$if_str,
+	'invert|v'    => \$invert,
 );
 
 if (!$bits && !$bytes) {
@@ -229,7 +231,12 @@ sub output_data {
 	my ($cur,$last) = @_;
 
 	my @ints = nsort(keys(%$cur));
-	@ints = grep(/$filter/,@ints);
+
+	if ($filter && $invert) {
+		@ints = grep(!/$filter/,@ints);
+	} elsif ($filter) {
+		@ints = grep(/$filter/,@ints);
+	}
 
 	# Find the length of the longest interface name
 	my $max_len = 0;
