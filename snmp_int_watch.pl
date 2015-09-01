@@ -229,6 +229,7 @@ sub output_data {
 	my ($cur,$last) = @_;
 
 	my @ints = nsort(keys(%$cur));
+	@ints = grep(/$filter/,@ints);
 
 	# Find the length of the longest interface name
 	my $max_len = 0;
@@ -241,12 +242,20 @@ sub output_data {
 
 	my $date = mysql_date(1);
 
-	# Print the date header
-	print color("15bold");
-	printf("$date\n");
-	print "-" x length($date) . "\n";
+	# If there is only one interface we output the data on one line instead of a table
+	if (@ints == 1) {
+		print color("15bold");
+		printf("$date: ");
+		print color();
+	# More than one interface, table mode
+	} else {
+		# Print the date header
+		print color("15bold");
+		printf("$date\n");
+		print "-" x length($date) . "\n";
 
-	print color();
+		print color();
+	}
 
 	# Loop through each interface, calculate the bytes between the
 	# previous data and now
@@ -267,16 +276,17 @@ sub output_data {
 		my $out_str = human_size(int($out_total / $delay));
 		my $in_str  = human_size(int($in_total / $delay));
 
-		# If there is no filter, or the line matches the filter spit it out
-		if (!$filter || $name =~ /$filter/) {
-			my $open_color  = color(14);
-			my $reset_color = color();
-			printf("$open_color%-${max_len}s$reset_color = $out_str/$in_str\n",$name);
-			print color();
-		}
+		my $open_color  = color(14);
+		my $reset_color = color();
+
+		printf("$open_color%-${max_len}s$reset_color = $out_str/$in_str\n",$name);
+		print color();
 	}
 
-	print "\n";
+	# If it's not oneline mode, we output an extra \n
+	if (@ints > 1) {
+		print "\n";
+	}
 }
 
 sub mysql_date {
