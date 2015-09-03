@@ -381,7 +381,7 @@ sub has_64bit_counters {
 	my $resp = $session->get_request($oid);
 	my $err  = $session->error;
 
-	if ($err) {
+	if ($err || $resp->{$oid} eq "noSuchObject") {
 		$ret = 0;
 	} else {
 		$ret = 1;
