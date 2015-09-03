@@ -346,6 +346,7 @@ sub usage {
 	$ret    .= "    --delay           Delay between updates (in seconds)\n";
 	$ret    .= "    --int_num 1,5,9   Only show specific SNMP interfaces\n";
 	$ret    .= "    --32bit           Force 32bit SNMP counters\n";
+	$ret    .= "    --desc            Use interface aliases/descriptions instead of port names\n";
 	$ret    .= "    --debug           Enable debug mode\n";
 
 	return $ret;

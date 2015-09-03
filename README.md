@@ -10,5 +10,6 @@ perl snmp_int_watch.pl community@hostname [filter]
     --delay           Delay between updates (in seconds)
     --int_num 1,5,9   Only show specific SNMP interfaces
     --32bit           Force 32bit SNMP counters
+    --desc            Use interface aliases/descriptions instead of port names
     --debug           Enable debug mode
 ```
