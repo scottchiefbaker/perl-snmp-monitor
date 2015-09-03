@@ -17,7 +17,7 @@ my $if_str     = "";
 my @ifs;
 
 my $ok = GetOptions(
-	'debug'       => \$debug,
+	'debug+'      => \$debug,
 	'bytes|b'     => \$bytes,
 	'bits'        => \$bits,
 	'delay|d=i'   => \$delay,
@@ -215,9 +215,13 @@ sub get_interface_names {
 	}
 
 	# We're maping the IDs to the name of the interface
-	foreach my $key(keys(%$response)) {
+	foreach my $key(nsort(keys(%$response))) {
 		my $value   = $response->{$key};
 		my $int_num = int_num($key);
+
+		if ($debug > 1) {
+			print "$int_num => $value\n";
+		}
 
 		$ret->{$int_num} = $value;
 	}
