@@ -142,9 +142,8 @@ sub get_interface_bandwidth {
 	foreach my $key(keys(%$response)) {
 		my $bw       = $response->{$key};
 		my $int_num  = int_num($key);
-		my $int_name = $ints->{$int_num};
 
-		$ret->{$int_name}->{out} = $bw;
+		$ret->{$int_num}->{out} = $bw;
 	}
 
 	if ($debug) {
@@ -177,9 +176,8 @@ sub get_interface_bandwidth {
 	foreach my $key(keys(%$response)) {
 		my $bw = $response->{$key};
 		my $int_num = int_num($key);
-		my $int_name = $ints->{$int_num};
 
-		$ret->{$int_name}->{in} = $bw;
+		$ret->{$int_num}->{in} = $bw;
 	}
 
 	if ($debug) {
@@ -244,21 +242,49 @@ sub int_num {
 	return $str;
 }
 
+# Filter out interfaces by name
+sub filter_ifs {
+	my $filter = shift();
+	my $invert = shift();
+	my @ifs    = @_;
+
+	my @ret = ();
+	my $ret = {};
+	foreach my $int_num (@ifs) {
+		my $name = $ints->{$int_num};
+
+		if ($invert) {
+			if ($name !~ /$filter/) {
+				push(@ret,$int_num);
+				$ret->{$int_num} = $name;
+			}
+		} elsif ($name =~ /$filter/) {
+			push(@ret,$int_num);
+			$ret->{$int_num} = $name;
+		}
+	}
+
+	my @sort = sort{ $ret->{$a} cmp $ret->{$b} } keys %$ret;
+
+	dd($ret);
+	dd(\@sort); exit;
+
+	return @ret;
+}
+
 sub output_data {
 	my ($cur,$last) = @_;
 
-	my @ints = nsort(keys(%$cur));
+	my @ints = keys(%$cur);
 
-	if ($filter && $invert) {
-		@ints = grep(!/$filter/,@ints);
-	} elsif ($filter) {
-		@ints = grep(/$filter/,@ints);
+	if ($filter) {
+		@ints = filter_ifs($filter,$invert,@ints);
 	}
 
 	# Find the length of the longest interface name
 	my $max_len = 0;
-	foreach (@ints) {
-		my $len = length($_);
+	foreach my $int_num (@ints) {
+		my $len = length($ints->{$int_num});
 		if ($len > $max_len) {
 			$max_len = $len;
 		}
@@ -283,14 +309,16 @@ sub output_data {
 
 	# Loop through each interface, calculate the bytes between the
 	# previous data and now
-	foreach my $name (@ints) {
-		my $prev      = $last->{$name}->{out};
-		my $now       = $cur->{$name}->{out};
+	foreach my $num (@ints) {
+		my $prev      = $last->{$num}->{out};
+		my $now       = $cur->{$num}->{out};
 		my $out_total = $now - $prev;
 
-		my $prev     = $last->{$name}->{in};
-		my $now      = $cur->{$name}->{in};
+		my $prev     = $last->{$num}->{in};
+		my $now      = $cur->{$num}->{in};
 		my $in_total = $now - $prev;
+
+		my $name     = $ints->{$num};
 
 		if ($bits) {
 			$out_total *= 8;
