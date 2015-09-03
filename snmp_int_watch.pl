@@ -12,6 +12,7 @@ my $bits       = 0;
 my $bytes      = 0;
 my $invert     = 0;
 my $thirty_two = 0;
+my $use_alias  = 0;
 my $if_str     = "";
 
 my @ifs;
@@ -23,6 +24,7 @@ my $ok = GetOptions(
 	'delay|d=i'   => \$delay,
 	'int_num|i=s' => \$if_str,
 	'invert|v'    => \$invert,
+	'alias|desc'  => \$use_alias,
 	'32bit'       => \$thirty_two,
 );
 
@@ -194,8 +196,15 @@ sub get_interface_names {
 	my $session = shift();
 
 	my $ret = {};
-	# IF-MIB::ifDescr
-	my $oid = ".1.3.6.1.2.1.2.2.1.2";
+
+	my $oid = "";
+	if ($use_alias) {
+		# IF-MIB::ifAlias
+		$oid = ".1.3.6.1.2.1.31.1.1.1.18";
+	} else {
+		# IF-MIB::ifDescr
+		$oid = ".1.3.6.1.2.1.2.2.1.2";
+	}
 
 	my $start = time();
 
@@ -216,8 +225,12 @@ sub get_interface_names {
 
 	# We're maping the IDs to the name of the interface
 	foreach my $key(nsort(keys(%$response))) {
-		my $value   = $response->{$key};
-		my $int_num = int_num($key);
+		my $value    = $response->{$key};
+		my $int_num  = int_num($key);
+
+		if ($use_alias && !$value) {
+			$value = "No alias";
+		}
 
 		if ($debug > 1) {
 			printf("%2d => %s\n",$int_num,$value);
