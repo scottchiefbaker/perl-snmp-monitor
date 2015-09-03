@@ -220,7 +220,7 @@ sub get_interface_names {
 		my $int_num = int_num($key);
 
 		if ($debug > 1) {
-			print "$int_num => $value\n";
+			printf("%2d => %s\n",$int_num,$value);
 		}
 
 		$ret->{$int_num} = $value;
