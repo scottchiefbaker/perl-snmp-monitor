@@ -1,5 +1,5 @@
 # perl-snmp-monitor
-Perl script to monitor bandwidth via SNMP
+Perl script to monitor interface bandwidth via SNMP
 
 ##### Sample usage: #####
 ```
