@@ -146,7 +146,7 @@ sub get_interface_bandwidth {
 		my $int_num  = int_num($key);
 		my $int_name = $ints->{$int_num};
 
-		$ret->{$int_name}->{out} = $bw;
+		$ret->{$int_name}->{$int_num}->{out} = $bw;
 	}
 
 	if ($debug) {
@@ -181,7 +181,7 @@ sub get_interface_bandwidth {
 		my $int_num = int_num($key);
 		my $int_name = $ints->{$int_num};
 
-		$ret->{$int_name}->{in} = $bw;
+		$ret->{$int_name}->{$int_num}->{in} = $bw;
 	}
 
 	if ($debug) {
@@ -257,6 +257,20 @@ sub int_num {
 	return $str;
 }
 
+sub if_count {
+	my $data = shift();
+	my @ifs  = @_;
+
+	my $ret = 0;
+	foreach my $if_name (@ifs) {
+		foreach my $int_num (keys %{$data->{$if_name}}) {
+			$ret++;
+		}
+	}
+
+	return $ret;
+}
+
 sub output_data {
 	my ($cur,$last) = @_;
 
@@ -267,6 +281,8 @@ sub output_data {
 	} elsif ($filter) {
 		@ints = grep(/$filter/,@ints);
 	}
+
+	my $if_count = if_count($cur,@ints);
 
 	# Find the length of the longest interface name
 	my $max_len = 0;
@@ -280,7 +296,7 @@ sub output_data {
 	my $date = mysql_date(1);
 
 	# If there is only one interface we output the data on one line instead of a table
-	if (@ints == 1) {
+	if ($if_count == 1) {
 		print color("15bold");
 		printf("$date: ");
 		print color();
@@ -297,31 +313,33 @@ sub output_data {
 	# Loop through each interface, calculate the bytes between the
 	# previous data and now
 	foreach my $name (@ints) {
-		my $prev      = $last->{$name}->{out};
-		my $now       = $cur->{$name}->{out};
-		my $out_total = $now - $prev;
+		foreach my $int_num (keys %{$cur->{$name}}) {
+			my $prev      = $last->{$name}->{$int_num}->{out};
+			my $now       = $cur->{$name}->{$int_num}->{out};
+			my $out_total = $now - $prev;
 
-		my $prev     = $last->{$name}->{in};
-		my $now      = $cur->{$name}->{in};
-		my $in_total = $now - $prev;
+			my $prev     = $last->{$name}->{$int_num}->{in};
+			my $now      = $cur->{$name}->{$int_num}->{in};
+			my $in_total = $now - $prev;
 
-		if ($bits) {
-			$out_total *= 8;
-			$in_total  *= 8;
+			if ($bits) {
+				$out_total *= 8;
+				$in_total  *= 8;
+			}
+
+			my $out_str = human_size(int($out_total / $delay));
+			my $in_str  = human_size(int($in_total / $delay));
+
+			my $open_color  = color(14);
+			my $reset_color = color();
+
+			printf("$open_color%-${max_len}s$reset_color = $out_str/$in_str\n",$name);
+			print color();
 		}
-
-		my $out_str = human_size(int($out_total / $delay));
-		my $in_str  = human_size(int($in_total / $delay));
-
-		my $open_color  = color(14);
-		my $reset_color = color();
-
-		printf("$open_color%-${max_len}s$reset_color = $out_str/$in_str\n",$name);
-		print color();
 	}
 
 	# If it's not oneline mode, we output an extra \n
-	if (@ints > 1) {
+	if ($if_count > 1) {
 		print "\n";
 	}
 }
