@@ -6,12 +6,13 @@ use Time::HiRes qw(time sleep);
 use Net::SNMP;
 use Data::Dump::Color;
 
-my $debug  = 0;
-my $delay  = 3; # Default delay is 3 seconds
-my $bits   = 0;
-my $bytes  = 0;
-my $invert = 0;
-my $if_str = "";
+my $debug      = 0;
+my $delay      = 3; # Default delay is 3 seconds
+my $bits       = 0;
+my $bytes      = 0;
+my $invert     = 0;
+my $thirty_two = 0;
+my $if_str     = "";
 
 my @ifs;
 
@@ -22,6 +23,7 @@ my $ok = GetOptions(
 	'delay|d=i'   => \$delay,
 	'int_num|i=s' => \$if_str,
 	'invert|v'    => \$invert,
+	'32bit'       => \$thirty_two,
 );
 
 if (!$bits && !$bytes) {
@@ -48,8 +50,16 @@ if (!$community || !$host) {
 
 print "Connecting to $host using $community\n";
 
-my $s         = snmp_connect($host,$community);
-my $sixtyfour = has_64bit_counters($s);
+my $s = snmp_connect($host,$community);
+
+# If they force 32 bit use that, otherwise check if the device supports 64bit
+my $sixtyfour = 0;
+if ($thirty_two) {
+	$sixtyfour = 0;
+} else {
+	$sixtyfour = has_64bit_counters($s);
+}
+
 my $ints      = get_interface_names($s);
 my $int_count = scalar(keys(%$ints));
 
