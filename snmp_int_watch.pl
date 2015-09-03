@@ -111,11 +111,13 @@ sub get_interface_bandwidth {
 
 	my $start = time();
 
+	# IF-MIB::ifInOctets / IF-MIB::ifOutOctets
 	my $out_oid = ".1.3.6.1.2.1.2.2.1.16";
 	my $in_oid  = ".1.3.6.1.2.1.2.2.1.17";
 
 	# If the device supports 64 bit values, get those instead because they're more accurate
 	if ($sixtyfour) {
+		# IF-MIB::ifHCInOctets / IF-MIB::ifHCOutOctets
 		$in_oid  = ".1.3.6.1.2.1.31.1.1.1.6";
 		$out_oid = ".1.3.6.1.2.1.31.1.1.1.10";
 	}
@@ -192,6 +194,7 @@ sub get_interface_names {
 	my $session = shift();
 
 	my $ret = {};
+	# IF-MIB::ifDescr
 	my $oid = ".1.3.6.1.2.1.2.2.1.2";
 
 	my $start = time();
@@ -385,6 +388,7 @@ sub has_64bit_counters {
 	my $start   = time();
 	my $ret;
 
+	# IF-MIB::ifHCInOctets / IF-MIB::ifHCOutOctets
 	# 1.3.6.1.2.1.31.1.1.1.6  = in
 	# 1.3.6.1.2.1.31.1.1.1.10 = out
 
