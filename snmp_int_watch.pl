@@ -15,8 +15,6 @@ my $thirty_two = 0;
 my $use_alias  = 0;
 my $if_str     = "";
 
-my @ifs;
-
 my $ok = GetOptions(
 	'debug+'      => \$debug,
 	'bytes|b'     => \$bytes,
@@ -28,19 +26,21 @@ my $ok = GetOptions(
 	'32bit'       => \$thirty_two,
 );
 
+# Default to bits if nothing is specified
 if (!$bits && !$bytes) {
 	$bits = 1;
+# In case they try and set both bits and bytes
+} elsif ($bits) {
+	$bytes = 0;
 }
 
+# Check to see if there is a list of interface numbers
+my @ifs;
 if ($if_str) {
 	@ifs = split(/,/,$if_str);
 }
 
-# In case they try and set both bits and bytes
-if ($bits) {
-	$bytes = 0;
-}
-
+# Break appart the connect string
 my @p         = split(/@/,$ARGV[0]);
 my $community = $p[0];
 my $host      = $p[1];
@@ -69,6 +69,7 @@ my $last  = {};
 my $first = 1;
 while(1) {
 	my $start = time();
+
 	# Grab the interface stats
 	my $cur = get_interface_bandwidth($s);
 
@@ -77,6 +78,7 @@ while(1) {
 		output_data($cur,$last);
 	}
 
+	# Calculate how much time to sleep between interations
 	my $elapsed = time() - $start;
 	my $remain  = $delay - $elapsed;
 
@@ -94,7 +96,8 @@ while(1) {
 	# Wait X seconds and grab the data again
 	sleep($remain);
 
-	$last = $cur; # Store the data to compare it
+	# Store the data to compare it
+	$last = $cur;
 }
 
 #############################################################
