@@ -90,6 +90,11 @@ while(1) {
 		$first = 0;
 	}
 
+	# If the request took more than the delay, we don't delay at all
+	if ($remain < 0) {
+		$remain = 0;
+	}
+
 	if ($debug) {
 		printf("Sleeping for %0.2f seconds\n",$remain);
 	}
