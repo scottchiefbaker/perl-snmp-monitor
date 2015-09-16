@@ -372,7 +372,7 @@ sub usage {
 	my $ret  = "Usage: $0 community\@hostname [filter]\n";
 	$ret    .= "\n";
 	$ret    .= "    --invert          Invert your filter\n";
-	$ret    .= "    --bytes           Output bandwidth per secondin bytes\n";
+	$ret    .= "    --bytes           Output bandwidth per second in bytes\n";
 	$ret    .= "    --delay           Delay between updates (in seconds)\n";
 	$ret    .= "    --int_num 1,5,9   Only show specific SNMP interfaces\n";
 	$ret    .= "    --32bit           Force 32bit SNMP counters\n";
