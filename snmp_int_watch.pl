@@ -468,7 +468,7 @@ sub has_64bit_counters {
 
 	if ($debug) {
 		my $total = sprintf("%0.2f",time() - $start);
-		print "Checking for 64 bit counters (support: $ret) took $total seconds\n";
+		print "Checking if device understands 64 bit counters (" . boolean_to_str($ret) . ") took $total seconds\n";
 	}
 
 	return $ret;
@@ -524,4 +524,14 @@ sub nsort {
 		\@bit;
 	}
 	@_;
+}
+
+sub boolean_to_str {
+	my $i = shift();
+
+	if ($i) {
+		return "yes";
+	} else {
+		return "no";
+	}
 }
