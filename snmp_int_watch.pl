@@ -159,6 +159,11 @@ sub get_interface_bandwidth {
 		my $int_num  = int_num($key);
 		my $int_name = $ints->{$int_num};
 
+		# When counters roll, the numbers go negative so we fake it out
+		if ($bw < 0) {
+			$bw = 0;
+		}
+
 		$ret->{$int_name}->{$int_num}->{out} = $bw;
 	}
 
@@ -193,6 +198,11 @@ sub get_interface_bandwidth {
 		my $bw = $response->{$key};
 		my $int_num = int_num($key);
 		my $int_name = $ints->{$int_num};
+
+		# When counters roll, the numbers go negative so we fake it out
+		if ($bw < 0) {
+			$bw = 0;
+		}
 
 		$ret->{$int_name}->{$int_num}->{in} = $bw;
 	}
