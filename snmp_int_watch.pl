@@ -4,7 +4,7 @@ use strict;
 use Getopt::Long;
 use Time::HiRes qw(time sleep);
 use Net::SNMP;
-use Data::Dump::Color;
+#use Data::Dump::Color;
 
 my $debug      = 0;
 my $delay      = 3; # Default delay is 3 seconds
@@ -65,7 +65,8 @@ if ($thirty_two) {
 my $ints      = get_interface_names($s);
 my $int_count = scalar(keys(%$ints));
 
-my $last = {};
+my $last  = {};
+my $first = 1;
 while(1) {
 	my $start = time();
 	# Grab the interface stats
@@ -79,12 +80,20 @@ while(1) {
 	my $elapsed = time() - $start;
 	my $remain  = $delay - $elapsed;
 
+	# The first time we only sleep one second, this gets
+	# something on the screen as quickly as possible
+	if ($first) {
+		$remain = 1 - $elapsed;
+		$first = 0;
+	}
+
 	if ($debug) {
 		printf("Sleeping for %0.2f seconds\n",$remain);
 	}
 
 	# Wait X seconds and grab the data again
 	sleep($remain);
+
 	$last = $cur; # Store the data to compare it
 }
 
