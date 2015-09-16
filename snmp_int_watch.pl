@@ -38,6 +38,7 @@ if (!$bits && !$bytes) {
 my @ifs;
 if ($if_str) {
 	@ifs = split(/,/,$if_str);
+	@ifs = grep { $_ > 0 } @ifs;
 }
 
 # Break appart the connect string
