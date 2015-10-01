@@ -346,9 +346,9 @@ sub output_data {
 			my $now       = $cur->{$name}->{$int_num}->{out};
 			my $out_total = $now - $prev;
 
-			my $prev     = $last->{$name}->{$int_num}->{in};
-			my $now      = $cur->{$name}->{$int_num}->{in};
-			my $in_total = $now - $prev;
+			my $iprev    = $last->{$name}->{$int_num}->{in};
+			my $inow     = $cur->{$name}->{$int_num}->{in};
+			my $in_total = $inow - $iprev;
 
 			if ($bits) {
 				$out_total *= 8;
@@ -363,6 +363,10 @@ sub output_data {
 
 			printf("$open_color%-${max_len}s$reset_color = $out_str/$in_str\n",$name);
 			print color();
+
+			if ($debug > 1) {
+				printf(" * In : $inow - $iprev ($in_total)\n * Out: $now - $prev ($out_total)\n");
+			}
 		}
 	}
 
