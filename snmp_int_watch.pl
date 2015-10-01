@@ -336,9 +336,28 @@ sub output_data {
 			my $now       = $cur->{$name}->{$int_num}->{out};
 			my $out_total = $now - $prev;
 
+
+			# Check if the counters rolled and act appropriately
+			if (!$sixtyfour && ($out_total < 0)) {
+				$out_total = (2**32 + $now) - $prev;
+
+				if ($debug > 1) {
+					print "\n ** 32bit output counter roll detected... compensating\n";
+				}
+			}
+
 			my $iprev    = $last->{$name}->{$int_num}->{in};
 			my $inow     = $cur->{$name}->{$int_num}->{in};
 			my $in_total = $inow - $iprev;
+
+			# Check if the counters rolled and act appropriately
+			if (!$sixtyfour && ($in_total < 0)) {
+				$in_total = (2**32 + $inow) - $iprev;
+
+				if ($debug > 1) {
+					print "\n ** 32bit input counter roll detected... compensating\n";
+				}
+			}
 
 			if ($bits) {
 				$out_total *= 8;
