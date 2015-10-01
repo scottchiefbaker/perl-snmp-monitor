@@ -133,7 +133,7 @@ sub get_interface_bandwidth {
 
 	# IF-MIB::ifInOctets / IF-MIB::ifOutOctets
 	my $out_oid = ".1.3.6.1.2.1.2.2.1.16";
-	my $in_oid  = ".1.3.6.1.2.1.2.2.1.17";
+	my $in_oid  = ".1.3.6.1.2.1.2.2.1.10";
 
 	# If the device supports 64 bit values, get those instead because they're more accurate
 	if ($sixtyfour) {
