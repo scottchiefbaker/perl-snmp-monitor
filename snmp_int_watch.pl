@@ -51,8 +51,6 @@ if (!$community || !$host) {
 	die(usage());
 }
 
-print "Connecting to $host using $community\n";
-
 my $s = snmp_connect($host,$community);
 
 # If they force 32 bit use that, otherwise check if the device supports 64bit
@@ -113,9 +111,9 @@ sub snmp_connect {
 	my ($session, $error) = Net::SNMP->session(
 		-hostname  => $host,
 		-community => $community,
-		-timeout   => "30",
+		-timeout   => 5,
 		-version   => 2,
-		-port      => "161"
+		-port      => 161,
 	);
 
 	if (!defined($session)) {
@@ -472,6 +470,10 @@ sub has_64bit_counters {
 	my $oid  = ".1.3.6.1.2.1.31.1.1.1.6.1";
 	my $resp = $session->get_request($oid);
 	my $err  = $session->error;
+
+	if ($resp == undef) {
+		die("Timeout on SNMP request\n");
+	}
 
 	if ($err || $resp->{$oid} eq "noSuchObject") {
 		$ret = 0;
