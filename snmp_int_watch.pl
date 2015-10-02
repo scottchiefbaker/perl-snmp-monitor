@@ -113,6 +113,7 @@ sub snmp_connect {
 		-hostname  => $host,
 		-community => $community,
 		-timeout   => 5,
+		-retries   => 0,
 		-version   => 2,
 		-port      => 161,
 	);
