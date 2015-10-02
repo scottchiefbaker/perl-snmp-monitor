@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
+use warnings;
 use Getopt::Long;
 use Time::HiRes qw(time sleep);
 use Net::SNMP;
@@ -141,7 +142,7 @@ sub get_interface_bandwidth {
 	}
 
 	# Get the output bytes
-	my ($response,$err,$ret) = {},{},{};
+	my ($response,$err,$ret) = ({},{},{});
 	if (@ifs) {
 		foreach my $num (@ifs) {
 			my $int_oid = $out_oid . ".$num";
@@ -224,7 +225,7 @@ sub get_interface_names {
 
 	my $start = time();
 
-	my ($response,$err) = {},{};
+	my ($response,$err) = ({},{});
 	if (@ifs) {
 		foreach my $num (@ifs) {
 			my $int_oid = $oid . ".$num";
@@ -476,7 +477,7 @@ sub has_64bit_counters {
 	my $resp = $session->get_request($oid);
 	my $err  = $session->error;
 
-	if ($resp == undef) {
+	if (!defined($resp)) {
 		die("Timeout on SNMP request\n");
 	}
 
