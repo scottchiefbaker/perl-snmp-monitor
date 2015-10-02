@@ -10,15 +10,9 @@ use English;
 # Disable output buffering
 $OUTPUT_AUTOFLUSH = 1;
 
-my $debug      = 0;
-my $bits       = 0;
-my $bytes      = 0;
-my $invert     = 0;
-my $thirty_two = 0;
-my $use_alias  = 0;
-my $no_color   = 0;
-my $delay      = 3; # Default delay is 3 seconds
-my $if_str     = "";
+my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str);
+my $debug = 0;
+my $delay = 3; # Default delay is 3 seconds
 
 my $ok = GetOptions(
 	'debug+'      => \$debug,
