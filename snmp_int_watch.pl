@@ -13,6 +13,7 @@ my $bytes      = 0;
 my $invert     = 0;
 my $thirty_two = 0;
 my $use_alias  = 0;
+my $no_color   = 0;
 my $if_str     = "";
 
 my $ok = GetOptions(
@@ -24,6 +25,7 @@ my $ok = GetOptions(
 	'invert|v'    => \$invert,
 	'alias|desc'  => \$use_alias,
 	'32bit'       => \$thirty_two,
+	'nocolor'     => \$no_color,
 );
 
 # Default to bits if nothing is specified
@@ -404,6 +406,7 @@ sub usage {
 	$ret    .= "    --int_num 1,5,9   Only show specific SNMP interfaces\n";
 	$ret    .= "    --32bit           Force 32bit SNMP counters\n";
 	$ret    .= "    --desc            Use interface aliases/descriptions instead of port names\n";
+	$ret    .= "    --nocolor         Output data without any colors\n";
 	$ret    .= "    --debug           Enable debug mode\n";
 
 	return $ret;
@@ -411,6 +414,10 @@ sub usage {
 
 # String format: '115', '165bold', '10_on_140', 'reset', 'on_173'
 sub color {
+	if ($no_color) {
+		return "";
+	}
+
 	my $str = shift();
 
 	# If we're connected to a TTY don't do color
