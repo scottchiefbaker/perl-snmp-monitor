@@ -42,6 +42,7 @@ if ($if_str) {
 	@ifs = grep { $_ > 0 } @ifs;
 }
 
+# If there is nothing passed in via ARGV or ARGV does't have a '@' in it bail out
 if (!$ARGV[0] || $ARGV[0] !~ /@/) {
 	die(usage());
 }
