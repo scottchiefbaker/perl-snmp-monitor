@@ -42,6 +42,10 @@ if ($if_str) {
 	@ifs = grep { $_ > 0 } @ifs;
 }
 
+if (!$ARGV[0] || $ARGV[0] !~ /@/) {
+	die(usage());
+}
+
 # Break appart the connect string
 my @p         = split(/@/,$ARGV[0]);
 my $community = $p[0];
