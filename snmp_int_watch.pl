@@ -433,6 +433,8 @@ sub usage {
 	$ret    .= "    --32bit           Force 32bit SNMP counters\n";
 	$ret    .= "    --desc            Use interface aliases/descriptions instead of port names\n";
 	$ret    .= "    --nocolor         Output data without any colors\n";
+	$ret    .= "    --csv             Output data in CSV format\n";
+	$ret    .= "    --ping            Include average ping in CSV output\n";
 	$ret    .= "    --debug           Enable debug mode\n";
 
 	return $ret;

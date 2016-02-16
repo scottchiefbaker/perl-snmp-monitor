@@ -11,5 +11,8 @@ perl snmp_int_watch.pl community@hostname [filter]
     --int_num 1,5,9   Only show specific SNMP interfaces
     --32bit           Force 32bit SNMP counters
     --desc            Use interface aliases/descriptions instead of port names
+    --nocolor         Output data without any colors
+    --csv             Output data in CSV format
+    --ping            Include average ping in CSV output
     --debug           Enable debug mode
 ```
