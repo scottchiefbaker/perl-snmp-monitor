@@ -11,7 +11,7 @@ use English;
 # Disable output buffering
 $OUTPUT_AUTOFLUSH = 1;
 
-my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str);
+my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str,$csv,$ping);
 my $debug = 0;
 my $delay = 3; # Default delay is 3 seconds
 
@@ -25,6 +25,8 @@ my $ok = GetOptions(
 	'alias|desc'  => \$use_alias,
 	'32bit'       => \$thirty_two,
 	'nocolor'     => \$no_color,
+	'csv'         => \$csv,
+	'ping'        => \$ping,
 );
 
 # Default to bits if nothing is specified
@@ -90,6 +92,12 @@ while(1) {
 	# The first time we only sleep one second, this gets
 	# something on the screen as quickly as possible
 	if ($first) {
+		if ($csv && $ping) {
+			print "#Time,InterfaceName,BytesOut,BytesIn,PingMs\n";
+		} elsif ($csv) {
+			print "#Time,InterfaceName,BytesOut,BytesIn\n";
+		}
+
 		$remain = 1 - $elapsed;
 		$first = 0;
 	}
@@ -318,8 +326,10 @@ sub output_data {
 
 	my $date = mysql_date(1);
 
+	if ($csv) {
+		# No header, we do it down below
 	# If there is only one interface we output the data on one line instead of a table
-	if ($if_count == 1) {
+	} elsif ($if_count == 1) {
 		print color("15bold");
 		printf("$date: ");
 		print color();
@@ -331,6 +341,11 @@ sub output_data {
 		print "-" x length($date) . "\n";
 
 		print color();
+	}
+
+	my $ping_str = "";
+	if ($ping) {
+		$ping_str = "," . ping_host($host);
 	}
 
 	# Loop through each interface, calculate the bytes between the
@@ -372,11 +387,17 @@ sub output_data {
 			my $out_str = human_size(int($out_total / $delay));
 			my $in_str  = human_size(int($in_total / $delay));
 
-			my $open_color  = color(14);
-			my $reset_color = color();
+			if ($csv) {
+				my $out_str = int($out_total / $delay);
+				my $in_str  = int($in_total / $delay);
+				printf("$date,$name,$out_str,$in_str$ping_str\n");
+			} else {
+				my $open_color  = color(14);
+				my $reset_color = color();
 
-			printf("$open_color%-${max_len}s$reset_color = $out_str/$in_str\n",$name);
-			print color();
+				printf("$open_color%-${max_len}s$reset_color = $out_str/$in_str\n",$name);
+				print color();
+			}
 
 			if ($debug > 1) {
 				printf(" * In : $inow - $iprev ($in_total)\n * Out: $now - $prev ($out_total)\n");
@@ -385,7 +406,7 @@ sub output_data {
 	}
 
 	# If it's not oneline mode, we output an extra \n
-	if ($if_count > 1) {
+	if (!$csv && $if_count > 1) {
 		print "\n";
 	}
 }
