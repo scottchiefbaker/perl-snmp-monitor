@@ -447,7 +447,9 @@ sub color {
 }
 
 sub human_size {
-	my $size  = shift();
+	my $size      = shift();
+	my $use_color = shift() // 1;
+
 	my $color = '';
 	my $reset = color();
 
@@ -465,7 +467,9 @@ sub human_size {
 		$size = sprintf("%dB",$size);
 	}
 
-	$size = $color . $size . $reset;
+	if ($use_color) {
+		$size = $color . $size . $reset;
+	}
 
 	return $size;
 }
