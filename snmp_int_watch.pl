@@ -562,3 +562,20 @@ sub boolean_to_str {
 		return "no";
 	}
 }
+
+sub ping_host {
+	my $ip = shift();
+
+	my $cmd = "ping $ip -c 5 -i .2";
+	my @out = `$cmd`;
+
+	my $last = scalar(@out) - 1;
+	my $line = $out[$last];
+
+	# rtt min/avg/max/mdev = 17.867/18.457/18.881/0.407 ms
+	my ($nums) = $line =~ /= (.*?) ms/;
+	my @parts  = split(/\//,$nums);
+	my $avg    = sprintf("%0.1f",($parts[1]));
+
+	return $avg;
+}
