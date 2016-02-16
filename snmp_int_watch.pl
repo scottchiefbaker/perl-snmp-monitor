@@ -344,7 +344,7 @@ sub output_data {
 	}
 
 	my $ping_str = "";
-	if ($ping) {
+	if ($csv && $ping) {
 		$ping_str = "," . ping_host($host);
 	}
 
