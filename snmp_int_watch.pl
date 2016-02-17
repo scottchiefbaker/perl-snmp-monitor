@@ -356,7 +356,6 @@ sub output_data {
 			my $now       = $cur->{$name}->{$int_num}->{out};
 			my $out_total = $now - $prev;
 
-
 			# Check if the counters rolled and act appropriately
 			if (!$sixtyfour && ($out_total < 0)) {
 				$out_total = (2**32 + $now) - $prev;
@@ -600,7 +599,13 @@ sub ping_host {
 	my $line = $out[$last];
 
 	# rtt min/avg/max/mdev = 17.867/18.457/18.881/0.407 ms
-	my ($nums) = $line =~ /= (.*?) ms/;
+	my $nums = "";
+	if ($line =~ /= (.*?) ms/) {
+		$nums = $1;
+	} else {
+		return -1;
+	}
+
 	my @parts  = split(/\//,$nums);
 	my $avg    = sprintf("%0.1f",($parts[1]));
 
