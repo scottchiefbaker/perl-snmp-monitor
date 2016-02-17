@@ -352,8 +352,8 @@ sub output_data {
 	# previous data and now
 	foreach my $name (@ints) {
 		foreach my $int_num (keys %{$cur->{$name}}) {
-			my $prev      = $last->{$name}->{$int_num}->{out};
-			my $now       = $cur->{$name}->{$int_num}->{out};
+			my $prev      = int($last->{$name}->{$int_num}->{out});
+			my $now       = int($cur->{$name}->{$int_num}->{out});
 			my $out_total = $now - $prev;
 
 			# Check if the counters rolled and act appropriately
@@ -365,8 +365,8 @@ sub output_data {
 				}
 			}
 
-			my $iprev    = $last->{$name}->{$int_num}->{in};
-			my $inow     = $cur->{$name}->{$int_num}->{in};
+			my $iprev    = int($last->{$name}->{$int_num}->{in});
+			my $inow     = int($cur->{$name}->{$int_num}->{in});
 			my $in_total = $inow - $iprev;
 
 			# Check if the counters rolled and act appropriately
