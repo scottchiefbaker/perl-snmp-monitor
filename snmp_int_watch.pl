@@ -11,7 +11,7 @@ use English;
 # Disable output buffering
 $OUTPUT_AUTOFLUSH = 1;
 
-my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str,$csv,$ping);
+my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str,$csv,$ping,$discover);
 my $debug = 0;
 my $delay = 3; # Default delay is 3 seconds
 
@@ -27,6 +27,7 @@ my $ok = GetOptions(
 	'nocolor'     => \$no_color,
 	'csv'         => \$csv,
 	'ping'        => \$ping,
+	'discover'    => \$discover,
 );
 
 # Default to bits if nothing is specified
@@ -71,6 +72,18 @@ if ($thirty_two) {
 
 my $ints      = get_interface_names($s);
 my $int_count = scalar(keys(%$ints));
+
+# Just output the interface -> id mapping
+if ($discover) {
+	my @ifcs = sort{ $ints->{$a} cmp $ints ->{$b} } keys %$ints;
+
+	foreach my $id (@ifcs) {
+		my $name = $ints->{$id};
+		printf("%4d = %s\n",$id,$name);
+	}
+
+	exit;
+}
 
 my $last  = {};
 my $first = 1;
