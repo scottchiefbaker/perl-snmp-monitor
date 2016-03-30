@@ -11,7 +11,7 @@ use English;
 # Disable output buffering
 $OUTPUT_AUTOFLUSH = 1;
 
-my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str,$csv,$ping,$discover);
+my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str,$csv,$ping,$discover,$help);
 my $debug = 0;
 my $delay = 3; # Default delay is 3 seconds
 
@@ -28,6 +28,7 @@ my $ok = GetOptions(
 	'csv'         => \$csv,
 	'ping'        => \$ping,
 	'discover'    => \$discover,
+	'help'        => \$help,
 );
 
 # Default to bits if nothing is specified
@@ -46,7 +47,7 @@ if ($if_str) {
 }
 
 # If there is nothing passed in via ARGV or ARGV does't have a '@' in it bail out
-if (!$ARGV[0] || $ARGV[0] !~ /@/) {
+if ($help || !$ARGV[0] || $ARGV[0] !~ /@/) {
 	die(usage());
 }
 
