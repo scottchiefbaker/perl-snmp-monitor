@@ -19,7 +19,7 @@ my $ok = GetOptions(
 	'debug+'      => \$debug,
 	'bytes|b'     => \$bytes,
 	'bits'        => \$bits,
-	'delay|d=i'   => \$delay,
+	'delay|n=i'   => \$delay,
 	'int_num|i=s' => \$if_str,
 	'invert|v'    => \$invert,
 	'alias|desc'  => \$use_alias,
@@ -122,7 +122,7 @@ while(1) {
 	}
 
 	if ($debug) {
-		printf("Sleeping for %0.2f seconds\n",$remain);
+		printf STDERR ("Sleeping for %0.2f seconds\n",$remain);
 	}
 
 	# Wait X seconds and grab the data again
@@ -196,7 +196,7 @@ sub get_interface_bandwidth {
 
 	if ($debug) {
 		my $total = sprintf("%0.2f",time() - $start);
-		print "Fetch \"out\" bandwidth took $total seconds\n";
+		print STDERR "Fetch \"out\" bandwidth took $total seconds\n";
 	}
 
 	##########################################################
@@ -231,7 +231,7 @@ sub get_interface_bandwidth {
 
 	if ($debug) {
 		my $total = sprintf("%0.2f",time() - $start);
-		print "Fetch \"in\" bandwidth took $total seconds\n";
+		print STDERR "Fetch \"in\" bandwidth took $total seconds\n";
 	}
 
 	return $ret;
@@ -278,7 +278,7 @@ sub get_interface_names {
 		}
 
 		if ($debug > 1) {
-			printf("%2d => %s\n",$int_num,$value);
+			printf STDERR ("%2d => %s\n",$int_num,$value);
 		}
 
 		$ret->{$int_num} = $value;
@@ -287,7 +287,7 @@ sub get_interface_names {
 	if ($debug) {
 		my $total = sprintf("%0.2f",time() - $start);
 		my $count = scalar(keys(%$ret));
-		print "Fetch interface names took $total seconds ($count found)\n";
+		print STDERR "Fetch interface names took $total seconds ($count found)\n";
 	}
 
 	return $ret;
@@ -375,7 +375,7 @@ sub output_data {
 				$out_total = (2**32 + $now) - $prev;
 
 				if ($debug > 1) {
-					print "\n ** 32bit output counter roll detected... compensating\n";
+					print STDERR "\n ** 32bit output counter roll detected... compensating\n";
 				}
 			}
 
@@ -388,7 +388,7 @@ sub output_data {
 				$in_total = (2**32 + $inow) - $iprev;
 
 				if ($debug > 1) {
-					print "\n ** 32bit input counter roll detected... compensating\n";
+					print STDERR "\n ** 32bit input counter roll detected... compensating\n";
 				}
 			}
 
@@ -537,7 +537,7 @@ sub has_64bit_counters {
 
 	if ($debug) {
 		my $total = sprintf("%0.2f",time() - $start);
-		print "Checking if device understands 64 bit counters (" . boolean_to_str($ret) . ") took $total seconds\n";
+		print STDERR "Checking if device understands 64 bit counters (" . boolean_to_str($ret) . ") took $total seconds\n";
 	}
 
 	return $ret;
