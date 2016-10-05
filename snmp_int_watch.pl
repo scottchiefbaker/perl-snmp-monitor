@@ -350,6 +350,10 @@ sub output_data {
 		@ints = grep(/$filter/i,@ints);
 	}
 
+	if (!@ints) {
+		die("Error: No interfaces were found to output\n");
+	}
+
 	my $if_count = if_count($cur,@ints);
 
 	# Find the length of the longest interface name
