@@ -346,9 +346,9 @@ sub output_data {
 	my @ints = nsort(keys(%$cur));
 
 	if ($filter && $invert) {
-		@ints = grep(!/$filter/,@ints);
+		@ints = grep(!/$filter/i,@ints);
 	} elsif ($filter) {
-		@ints = grep(/$filter/,@ints);
+		@ints = grep(/$filter/i,@ints);
 	}
 
 	my $if_count = if_count($cur,@ints);
