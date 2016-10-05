@@ -692,4 +692,9 @@ BEGIN {
 		require Data::Dumper;
 		*k = sub { print Data::Dumper::Dumper($_[0]) };
 	}
+
+	sub kd {
+		k(@_);
+		die;
+	}
 }
