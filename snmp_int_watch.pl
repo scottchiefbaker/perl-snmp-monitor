@@ -661,11 +661,11 @@ sub is_one_interface {
 		my $desc = $ifcs->{$id};
 
 		if ($filter && $invert) {
-			if ($desc !~ /$filter/) {
+			if ($desc !~ /$filter/i) {
 				push(@filtered,$id);
 			}
 		} elsif ($filter) {
-			if ($desc =~ /$filter/) {
+			if ($desc =~ /$filter/i) {
 				push(@filtered,$id);
 			}
 		}
