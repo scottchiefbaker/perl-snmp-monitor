@@ -166,6 +166,22 @@ sub get_interface_bandwidth {
 
 	my $start = time();
 
+	my $bit_mode;
+	if ($sixtyfour) {
+		$bit_mode = "64 bit";
+	} else {
+		$bit_mode = "32 bit";
+	}
+
+	my $fetch_mode;
+	if ($one_id) {
+		$fetch_mode = "single OID";
+	} else {
+		$fetch_mode = "OID Table";
+	}
+
+	my $extra_str = "($bit_mode / $fetch_mode)";
+
 	# IF-MIB::ifInOctets / IF-MIB::ifOutOctets
 	my $out_oid = ".1.3.6.1.2.1.2.2.1.16";
 	my $in_oid  = ".1.3.6.1.2.1.2.2.1.10";
@@ -204,7 +220,7 @@ sub get_interface_bandwidth {
 
 	if ($debug) {
 		my $total = sprintf("%0.2f",time() - $start);
-		print STDERR "Fetch \"out\" bandwidth took $total seconds\n";
+		print STDERR "Fetch \"out\" bandwidth took $total seconds $extra_str\n";
 	}
 
 	##########################################################
@@ -239,7 +255,7 @@ sub get_interface_bandwidth {
 
 	if ($debug) {
 		my $total = sprintf("%0.2f",time() - $start);
-		print STDERR "Fetch \"in\" bandwidth took $total seconds\n";
+		print STDERR "Fetch \"in\" bandwidth took $total seconds $extra_str\n";
 	}
 
 	return $ret;
