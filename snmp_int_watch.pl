@@ -70,7 +70,7 @@ if ($thirty_two) {
 	$sixtyfour = has_64bit_counters($s);
 }
 
-my $ints      = get_interface_names($s);
+my $ints      = get_interface_names($s,$use_alias);
 my $int_count = scalar(keys(%$ints));
 my $one_id    = is_one_interface($ints,$filter,$invert);
 
@@ -83,11 +83,29 @@ if ($one_id && !@ifs) {
 
 # Just output the interface -> id mapping
 if ($discover) {
-	my @ifcs = sort{ $ints->{$a} cmp $ints ->{$b} } keys %$ints;
+	my @ifcs    = sort{ $ints->{$a} cmp $ints ->{$b} } keys %$ints;
+	my $aliases = get_alias_names($s);
 
+	# Find the longest interface name so we can properly line up columns
+	my $longest = 0;
 	foreach my $id (@ifcs) {
 		my $name = $ints->{$id};
-		printf("%4d = %s\n",$id,$name);
+		my $len  = length($name);
+
+		if ($len > $longest) {
+			$longest = $len;
+		}
+	}
+
+	foreach my $id (@ifcs) {
+		my $name  = $ints->{$id};
+		my $alias = $aliases->{$id};
+
+		if ($alias) {
+			printf("%4d = %-${longest}s (alias: '%s')\n",$id,$name,$alias);
+		} else {
+			printf("%4d = %s\n",$id,$name);
+		}
 	}
 
 	exit;
@@ -260,8 +278,17 @@ sub get_interface_bandwidth {
 	return $ret;
 }
 
+sub get_alias_names {
+	my $snmp_session = shift();
+
+	my $ifcs = get_interface_names($snmp_session,1);
+
+	return $ifcs;
+}
+
 sub get_interface_names {
-	my $session = shift();
+	my $session   = shift();
+	my $use_alias = shift();
 
 	my $ret = {};
 
@@ -297,7 +324,7 @@ sub get_interface_names {
 		my $int_num  = int_num($key);
 
 		if ($use_alias && !$value) {
-			$value = "No alias";
+			$value = "";
 		}
 
 		if ($debug > 1) {
