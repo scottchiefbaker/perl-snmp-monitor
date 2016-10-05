@@ -6,7 +6,6 @@ use Getopt::Long;
 use Time::HiRes qw(time sleep);
 use Net::SNMP;
 use English;
-#use Data::Dump::Color;
 
 # Disable output buffering
 $OUTPUT_AUTOFLUSH = 1;
@@ -675,5 +674,18 @@ sub is_one_interface {
 		return $filtered[0];
 	} else {
 		return undef;
+	}
+}
+
+# Create a subroutine k() that either uses Data::Dump::Color or Dumper
+# whichever is installed
+#
+# Borrowed from: http://www.perturb.org/display/1097_Perl_detect_if_a_module_is_installed_before_using_it.html
+BEGIN {
+	if (eval { require Data::Dump::Color }) {
+		*k = sub { Data::Dump::Color::dd($_[0]) };
+	} else {
+		require Data::Dumper;
+		*k = sub { print Data::Dumper::Dumper($_[0]) };
 	}
 }
