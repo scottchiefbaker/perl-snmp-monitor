@@ -73,6 +73,14 @@ if ($thirty_two) {
 
 my $ints      = get_interface_names($s);
 my $int_count = scalar(keys(%$ints));
+my $one_id    = is_one_interface($ints,$filter,$invert);
+
+if ($one_id && !@ifs) {
+	if ($debug) {
+		print STDERR "'$filter' maps to a SINGLE interface: $one_id\n";
+	}
+	@ifs = ($one_id);
+}
 
 # Just output the interface -> id mapping
 if ($discover) {
@@ -626,4 +634,30 @@ sub ping_host {
 	my $avg    = sprintf("%0.1f",($parts[1]));
 
 	return $avg;
+}
+
+# If the filter leaves only ONE interface return ID for that interface
+sub is_one_interface {
+	my ($ifcs,$filter,$invert) = @_;
+
+	my @filtered;
+	foreach my $id (keys($ifcs)) {
+		my $desc = $ifcs->{$id};
+
+		if ($filter && $invert) {
+			if ($desc !~ /$filter/) {
+				push(@filtered,$id);
+			}
+		} elsif ($filter) {
+			if ($desc =~ /$filter/) {
+				push(@filtered,$id);
+			}
+		}
+	}
+
+	if (@filtered == 1) {
+		return $filtered[0];
+	} else {
+		return undef;
+	}
 }
