@@ -13,7 +13,7 @@ $OUTPUT_AUTOFLUSH = 1;
 
 my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str,$csv,$ping,$discover,$help);
 my $debug = 0;
-my $delay = 3; # Default delay is 3 seconds
+my $delay = 10; # Default delay
 
 my $ok = GetOptions(
 	'debug+'      => \$debug,
