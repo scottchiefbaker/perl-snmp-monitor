@@ -154,7 +154,9 @@ while(1) {
 	sleep($remain);
 
 	# Store the data to compare it
-	$last = $cur;
+	if ($cur) {
+		$last = $cur;
+	}
 }
 
 #############################################################
@@ -219,7 +221,11 @@ sub get_interface_bandwidth {
 			my $rsp = $session->get_request($int_oid);
 			my $err = $session->error;
 
-			%$response = (%$response,%$rsp);
+			if (!$err) {
+				%$response = (%$response,%$rsp);
+			} else {
+				return undef;
+			}
 		}
 	} else {
 		$response = $session->get_table($out_oid);
@@ -369,6 +375,11 @@ sub if_count {
 sub output_data {
 	my ($cur,$last) = @_;
 
+	if (!defined($cur)) {
+		print "Error fetching data\n";
+		return 0;
+	}
+
 	my @ints = nsort(keys(%$cur));
 
 	if ($filter && $invert) {
@@ -449,6 +460,15 @@ sub output_data {
 			if ($bits) {
 				$out_total *= 8;
 				$in_total  *= 8;
+			}
+
+			# This can sometimes happen if the remote router reboots in the middle
+			# and resets the counters
+			if ($out_total < 0) {
+				$out_total = 0;
+			}
+			if ($in_total < 0) {
+				$in_total = 0;
 			}
 
 			my $out_str = human_size(int($out_total / $delay));
