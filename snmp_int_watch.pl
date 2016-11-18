@@ -84,7 +84,7 @@ if ($one_id && !@ifs) {
 # Just output the interface -> id mapping
 if ($discover) {
 	my @ifcs    = sort{ $ints->{$a} cmp $ints ->{$b} } keys %$ints;
-	my $aliases = get_alias_names($s);
+	my $aliases = get_interface_aliases($s);
 
 	# Find the longest interface name so we can properly line up columns
 	my $longest = 0;
@@ -284,7 +284,7 @@ sub get_interface_bandwidth {
 	return $ret;
 }
 
-sub get_alias_names {
+sub get_interface_aliases {
 	my $snmp_session = shift();
 
 	my $ifcs = get_interface_names($snmp_session,1);
