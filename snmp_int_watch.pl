@@ -97,14 +97,23 @@ if ($discover) {
 		}
 	}
 
+	my $longest_id = 0;
+	foreach my $id (@ifcs) {
+		my $len = length($id);
+
+		if ($len > $longest_id) {
+			$longest_id = $len;
+		}
+	}
+
 	foreach my $id (@ifcs) {
 		my $name  = $ints->{$id};
 		my $alias = $aliases->{$id};
 
 		if ($alias) {
-			printf("%4d = %-${longest}s (alias: '%s')\n",$id,$name,$alias);
+			printf("%${longest_id}d = %-${longest}s (alias: '%s')\n",$id,$name,$alias);
 		} else {
-			printf("%4d = %s\n",$id,$name);
+			printf("%${longest_id}d = %s\n",$id,$name);
 		}
 	}
 
