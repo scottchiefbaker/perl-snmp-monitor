@@ -140,10 +140,17 @@ while(1) {
 	# The first time we only sleep one second, this gets
 	# something on the screen as quickly as possible
 	if ($first) {
+		my $in_out = "";
+		if ($bits) {
+			$in_out = "BitsOut,BitsIn";
+		} else {
+			$in_out = "BytesOut,BytesIn";
+		}
+
 		if ($csv && $ping) {
-			print "#Time,InterfaceName,BytesOut,BytesIn,PingMs\n";
+			print "#Time,InterfaceName,$in_out,PingMs\n";
 		} elsif ($csv) {
-			print "#Time,InterfaceName,BytesOut,BytesIn\n";
+			print "#Time,InterfaceName,$in_out\n";
 		}
 
 		$remain = 1 - $elapsed;
