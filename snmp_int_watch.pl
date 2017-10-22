@@ -716,7 +716,7 @@ sub is_one_interface {
 	my ($ifcs,$filter,$invert) = @_;
 
 	my @filtered;
-	foreach my $id (keys($ifcs)) {
+	foreach my $id (keys(%$ifcs)) {
 		my $desc = $ifcs->{$id};
 
 		if ($filter && $invert) {
