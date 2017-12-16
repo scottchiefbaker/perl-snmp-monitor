@@ -144,9 +144,9 @@ while(1) {
 	if ($first) {
 		my $in_out = "";
 		if ($bits) {
-			$in_out = "BitsOut,BitsIn";
+			$in_out = "BitsOutSec,BitsInSec";
 		} else {
-			$in_out = "BytesOut,BytesIn";
+			$in_out = "BytesOutSec,BytesInSec";
 		}
 
 		if ($csv && $ping) {
