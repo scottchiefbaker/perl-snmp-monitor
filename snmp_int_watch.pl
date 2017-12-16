@@ -10,9 +10,10 @@ use English;
 # Disable output buffering
 $OUTPUT_AUTOFLUSH = 1;
 
-my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str,$csv,$ping,$discover,$help);
-my $debug = 0;
-my $delay = 10; # Default delay
+my ($bits,$bytes,$invert,$thirty_two,$use_alias,$no_color,$if_str,$csv,$ping,$discover,$help,$timeout);
+my $debug        = 0;
+my $delay        = 10; # Default delay
+my $script_start = time();
 
 my $ok = GetOptions(
 	'debug+'      => \$debug,
@@ -28,6 +29,7 @@ my $ok = GetOptions(
 	'ping'        => \$ping,
 	'discover'    => \$discover,
 	'help'        => \$help,
+	'timeout=i'   => \$timeout,
 );
 
 # Default to bits if nothing is specified
@@ -164,6 +166,12 @@ while(1) {
 
 	if ($debug) {
 		printf STDERR ("Sleeping for %0.2f seconds\n",$remain);
+	}
+
+	my $total = time() - $script_start;
+	if ($timeout && ($total >= $timeout)) {
+		print "Timeout reached\n";
+		exit;
 	}
 
 	# Wait X seconds and grab the data again
