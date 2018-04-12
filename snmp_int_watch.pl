@@ -85,41 +85,8 @@ if ($one_id && !@ifs) {
 
 # Just output the interface -> id mapping
 if ($discover) {
-	my @ifcs    = sort{ $ints->{$a} cmp $ints ->{$b} } keys %$ints;
-	my $aliases = get_interface_aliases($s);
-
-	# Find the longest interface name so we can properly line up columns
-	my $longest = 0;
-	foreach my $id (@ifcs) {
-		my $name = $ints->{$id};
-		my $len  = length($name);
-
-		if ($len > $longest) {
-			$longest = $len;
-		}
-	}
-
-	my $longest_id = 0;
-	foreach my $id (@ifcs) {
-		my $len = length($id);
-
-		if ($len > $longest_id) {
-			$longest_id = $len;
-		}
-	}
-
-	foreach my $id (@ifcs) {
-		my $name  = $ints->{$id};
-		my $alias = $aliases->{$id};
-
-		if ($alias) {
-			printf("%${longest_id}d = %-${longest}s (alias: '%s')\n",$id,$name,$alias);
-		} else {
-			printf("%${longest_id}d = %s\n",$id,$name);
-		}
-	}
-
-	exit;
+	show_discover($ints);
+	exit();
 }
 
 my $last  = {};
@@ -750,6 +717,45 @@ sub is_one_interface {
 	} else {
 		return undef;
 	}
+}
+
+sub show_discover {
+	my $ints    = shift();
+	my @ifcs    = sort { lc($ints->{$a}) cmp lc($ints ->{$b}) } keys %$ints;
+	my $aliases = get_interface_aliases($s);
+
+	# Find the longest interface name so we can properly line up columns
+	my $longest = 0;
+	foreach my $id (@ifcs) {
+		my $name = $ints->{$id};
+		my $len  = length($name);
+
+		if ($len > $longest) {
+			$longest = $len;
+		}
+	}
+
+	my $longest_id = 0;
+	foreach my $id (@ifcs) {
+		my $len = length($id);
+
+		if ($len > $longest_id) {
+			$longest_id = $len;
+		}
+	}
+
+	foreach my $id (@ifcs) {
+		my $name  = $ints->{$id};
+		my $alias = $aliases->{$id};
+
+		if ($alias) {
+			printf("%${longest_id}d = %-${longest}s (alias: '%s')\n",$id,$name,$alias);
+		} else {
+			printf("%${longest_id}d = %s\n",$id,$name);
+		}
+	}
+
+	exit;
 }
 
 # Create a subroutine k() that either uses Data::Dump::Color or Dumper
