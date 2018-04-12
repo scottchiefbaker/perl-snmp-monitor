@@ -89,6 +89,10 @@ if ($discover) {
 	exit();
 }
 
+#########################################################################
+# Start of the loop that gathers and outputs stats
+#########################################################################
+
 my $last  = {};
 my $first = 1;
 while(1) {
@@ -397,7 +401,7 @@ sub output_data {
 	my $date = mysql_date(1);
 
 	if ($csv) {
-		# No header, we do it down below
+	# No header, we do it down below
 	# If there is only one interface we output the data on one line instead of a table
 	} elsif ($if_count == 1) {
 		print color("15bold");
@@ -473,7 +477,7 @@ sub output_data {
 				my $open_color  = color(14);
 				my $reset_color = color();
 
-				printf("$open_color%-${max_len}s$reset_color = $out_str/$in_str\n",$name);
+				printf("$open_color%-${max_len}s$reset_color = %s %s\n",$name,$out_str,$in_str);
 				print color();
 			}
 
@@ -558,16 +562,16 @@ sub human_size {
 
 	if ($size > 1024**3) {
 		$color = color(12); # Blue
-		$size = sprintf("%.1fG",$size / 1024**3);
+		$size = sprintf("%5.1fG",$size / 1024**3);
 	} elsif ($size > 1024**2) {
 		$color = color(10); # Green
-		$size = sprintf("%.1fM",$size / 1024**2);
+		$size = sprintf("%5.1fM",$size / 1024**2);
 	} elsif ($size > 1024) {
 		$color = color(11); # Yellow
-		$size = sprintf("%.1fK",$size / 1024);
+		$size = sprintf("%5.1fK",$size / 1024);
 	} elsif ($size >= 0) {
 		$color = color(9); # Red
-		$size = sprintf("%dB",$size);
+		$size = sprintf("%5dB",$size);
 	}
 
 	if ($use_color) {
