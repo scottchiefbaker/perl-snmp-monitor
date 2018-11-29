@@ -58,6 +58,14 @@ my $community = $p[0];
 my $host      = $p[1];
 my $filter    = $ARGV[1] || "";
 
+# Example 123456:community@server.domain.com
+if ($community =~ /(\d+?):(.+)/) {
+	my $if_num = $1;
+	$community = $2;
+
+	@ifs = ($if_num);
+}
+
 if (!$community || !$host) {
 	die(usage());
 }
