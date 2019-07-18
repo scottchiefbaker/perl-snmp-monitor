@@ -411,9 +411,14 @@ sub output_data {
 
 	if ($if_count > 1) {
 		# Print the date header
-		print color("15bold");
-		print "\e[4m"; # Underline
-		printf("$date\n");
+		print color("15_bold");
+		print color("underline");
+
+		my $half  = int($max_len / 2);
+		my $left  = " " x $half;
+		my $right = " " x ($max_len - $half - 1);
+
+		print $left . $date . $right . "\n";
 		#print "-" x length($date) . "\n";
 
 		print color();
