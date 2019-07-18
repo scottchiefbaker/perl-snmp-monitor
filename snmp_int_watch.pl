@@ -543,31 +543,32 @@ sub usage {
 	return $ret;
 }
 
-# String format: '115', '165bold', '10_on_140', 'reset', 'on_173'
+# String format: '115', '165_bold', '10_on_140', 'reset', 'on_173', 'red', 'white_on_blue'
 sub color {
-	if ($no_color) {
-		return "";
-	}
-
 	my $str = shift();
 
-	# If we're connected to a TTY don't do color
+	# If we're NOT connected to a an interactive terminal don't do color
 	if (-t STDOUT == 0) { return ''; }
 
 	# No string sent in, so we just reset
-	if (!$str || $str eq 'reset') {
-		return "\e[0m";
-	}
+	if (!length($str) || $str eq 'reset') { return "\e[0m"; }
 
-	# Get foreground and bold
-	my ($fc,$bold) = $str =~ /^(\d+)(b|bold)?/g;
-	# Get the background color (if present)
-	my ($bc)       = $str =~ /on_?(\d+)$/g;
+	# Some predefined colors
+	my %color_map = qw(red 160 blue 21 green 34 yellow 226 orange 214 purple 93 white 15 black 0);
+	$str =~ s|([A-Za-z]+)|$color_map{$1} // $1|eg;
+
+	# Get foreground/background and any commands
+	my ($fc,$cmd) = $str =~ /(\d+)?_?(\w+)?/g;
+	my ($bc)      = $str =~ /on_?(\d+)/g;
+
+	# Some predefined commands
+	my %cmd_map = qw(bold 1 italic 3 underline 4 blink 5 inverse 7);
+	my $cmd_num = $cmd_map{$cmd // 0};
 
 	my $ret = '';
-	if ($bold) { $ret .= "\e[1m"; }
-	if ($fc)   { $ret .= "\e[38;5;${fc}m"; }
-	if ($bc)   { $ret .= "\e[48;5;${bc}m"; }
+	if ($cmd_num)     { $ret .= "\e[${cmd_num}m"; }
+	if (defined($fc)) { $ret .= "\e[38;5;${fc}m"; }
+	if (defined($bc)) { $ret .= "\e[48;5;${bc}m"; }
 
 	return $ret;
 }
