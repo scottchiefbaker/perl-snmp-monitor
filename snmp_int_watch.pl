@@ -483,7 +483,7 @@ sub output_data {
 			} else {
 				my $open_color  = color(14);
 				my $reset_color = color();
-				my $date_str    = color("15bold") . "$date: " . color();
+				my $date_str    = color("15_bold") . "$date: " . color();
 				state $first    = 1;
 
 				if ($if_count == 1) {
