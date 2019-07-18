@@ -6,6 +6,7 @@ use Getopt::Long;
 use Time::HiRes qw(time sleep);
 use Net::SNMP;
 use English;
+use 5.010; # Needed for 'state' variables
 
 # Disable output buffering
 $OUTPUT_AUTOFLUSH = 1;
@@ -408,19 +409,12 @@ sub output_data {
 
 	my $date = mysql_date(1);
 
-	if ($csv) {
-	# No header, we do it down below
-	# If there is only one interface we output the data on one line instead of a table
-	} elsif ($if_count == 1) {
-		print color("15bold");
-		printf("$date: ");
-		print color();
-	# More than one interface, table mode
-	} else {
+	if ($if_count > 1) {
 		# Print the date header
 		print color("15bold");
+		print "\e[4m"; # Underline
 		printf("$date\n");
-		print "-" x length($date) . "\n";
+		#print "-" x length($date) . "\n";
 
 		print color();
 	}
@@ -484,9 +478,26 @@ sub output_data {
 			} else {
 				my $open_color  = color(14);
 				my $reset_color = color();
+				my $date_str    = color("15bold") . "$date: " . color();
+				state $first    = 1;
 
-				printf("$open_color%-${max_len}s$reset_color = %s %s\n",$name,$out_str,$in_str);
-				print color();
+				if ($if_count == 1) {
+					if ($first) {
+						printf("$date_str$open_color%-${max_len}s$reset_color =     %s |   %s\n",$name, "Up", "Down");
+						$first = 0;
+					}
+
+					printf("$date_str$open_color%-${max_len}s$reset_color = %s | %s\n",$name,$out_str,$in_str);
+					print color();
+				} else {
+					if ($first) {
+						printf("%-${max_len}s$reset_color       %s |   %s\n","", "Up", "Down");
+						$first = 0;
+					}
+
+					printf("$open_color%-${max_len}s$reset_color = %s | %s\n",$name,$out_str,$in_str);
+					print color();
+				}
 			}
 
 			if ($debug > 1) {
